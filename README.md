@@ -1,113 +1,63 @@
-# hello-world
+# searching
+
+## Introduction
+
+In another lab you will learn about sorting. Sorting data can make finding relevant data trivial, and it is for this reason databases often include pre-sorted arrays of indices called indexes that allow for easy searching. Your computer's filesystem is one such example of an indexed database. However, creating these indexes can be expensive and time consuming if a database is big enough, especially if items are constantly being added and removed.
+
+When full sorting is prohibitively expensive, we need to reconsider the data structures we use to store data. ['Big O' Notation](https://www.bigocheatsheet.com/) describes the asymptotic computational time of algorithms as the size of data increases. Most sorting algorithms have worst case time complexities of `O(n log(n))` or worse. If we are sorting just for the sake of searching, then it might be better to choose a more searchable data structure to begin with.
+
+Linked Lists, Hash Tables, and Binary Search Trees are a few of the data structures that are commonly used to improve data manipulation times. Whether to use any of these structures or just regular arrays will be informed by the requirements of your situation.
+
+Linked Lists organize data into nodes, where each node contains a reference (pointer) to the next node in the sequence. Unlike arrays which store data in contiguous memory, linked lists allow data to be scattered in memory. This makes accessing an arbitrary element slower (O(n)) since you must traverse from the beginning, but inserting and removing elements can be much faster (O(1)) once you have a reference to the target location, as you only need to update pointers rather than shifting array elements.
+
+Hash Tables use a hashing function (an easily computable function that outputs a deterministic, preferably irregular integer) to map keys to indices in an array, allowing for on average, easy lookup, insertion, and deletion times (O(1)). When multiple keys hash to the same index (a collision), they are typically stored in a linked list at that index. This makes hash tables very efficient for scenarios where you need fast lookups with minimal overhead.
+
+Binary Search Trees organize data in a tree structure where each node has at most two children, with the left subtree containing smaller values and the right subtree containing larger values. This organization enables moderately fast search, insertion, and deletion in balanced trees (O(log n)), making them efficient for maintaining sorted data while allowing dynamic updates.
 
 ## Requirements
 
-- Git
-- C++ Compiler (gcc, clang, msvc)
-- CMake
+Implement the following data structures. Class signatures are provided in `src/search/search.hpp`. A sample driver is provided in `src/main.cpp`.
 
-## Installation
+- Create a Singly Linked List
+- Create a Hash Map
+  - You can use `y = x mod 'mapsize'` as your hashing function
+  - Use your Singly Linked List as the storage for each bucket in the map
+- Create a Binary Search Tree
+  - All values on the left side of a subtree should be less than the root node, and all values on the right side should be greater
 
-Setting up a C++ development environment can be non-trivial. The course is set up so that most relatively standard development environments will work fine, whether you are using Windows or Linux. Nor do we prescribe that you use a specific editor or that you use an editor at all! However for simplicity here we give instructions on how to use VS Code as your editor and setup a C++ development in Linux or Windows. Microsoft provides a thorough [set of instructions](https://code.visualstudio.com/docs/languages/cpp), but here we will go through some basics and the most pertinent set of instructions.
+You are also expected to add a series of unit tests to `tests/test_search.cpp`. Test the functionality of basic operations and data manipulations using your data structures, and consider what edge cases may arise.
 
-### Terminal Basics
+## Testing Requirements
 
-Many of the following instructions will require use of a terminal. While it is possible to perform these operations purely within a Graphical User Interface (GUI), you will find that you will often run into programs and tools that have no UI, and must be run via a command line interface (CLI), or even if there is a UI, it would be faster to type the necessary commands. The following instructions will be for Windows, as the specific instructions can vary greatly depending on your Linux Distro.
+- For the sake of testing we require that all your source files are placed in `src`.
+- We also require that nothing in `tests/test_search.cpp` and `src/search.hpp` is removed. You may feel free to add to this file or add additional files to this directory, as long as testing continues to build and run. Any additional changes may require you to make changes to `CMakeLists.txt`
+- You will need to provide implementations for all the class method declarations without definitions in `src/search.hpp`.
+- Your classes will be tested with [valgrind](https://valgrind.org/) to check for invalid memory access, or allocated memory that is not cleaned up on class destruction. If you are on Windows you can enable an address anitizer during building
+- Categorize your tests with either 'ListSLTest', 'HashMapTest', 'BinarySearchTreeTest' or 'MiscTest'.
+  - Google tests headers are of the form `TEST(TestCategory, TestName)`
 
-If you are unused to using the terminal here is a brief [introduction](https://www.freecodecamp.org/news/command-line-for-beginners/).
+## Bonus
 
-### Setup
+- Create a Doubly Linked List
+- Create an AVL Tree
 
-#### Windows
+### Hints
 
-On Windows for this first part you can use either Command Prompt or Powershell as your terminal, which can both be accessed via `Windows Terminal`. Both are acceptable but I would suggest using Powershell.
+- `std::optional` allows you to express that a value may not be obtainable, when implementing methods consider under what conditions you may not be able to return a value.
 
-We will use the utility `winget` to install the required programs.
+#### For Informational Purposes
 
-```shell
-winget --version
-```
-
-First, we will install [Git](https://git-scm.com/), a version control system.
-
-```shell
-winget install Git.Git
-```
-
-Next, we will install a C++ development environment. On Windows, developers have the option to either use [MSYS2](https://www.msys2.org/), which creates a Unix-like development environment, [Windows-Subsystem-for-Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/install), which creates an actual Linux system that runs on top of Windows, or [Microsoft's C++ Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022). If you wish to develop as if you are on Linux, WSL is an option, but we will continue with the Build Tools. While all three can be used with VS Code, the build tools can also be used with Microsoft's [Visual Studio](https://visualstudio.microsoft.com/downloads), which provides a fully integrated development environment. While we're at it, we will also install [VS Code](https://visualstudio.microsoft.com/downloads)
-
-```shell
-winget install Microsoft.VisualStudio.2022.BuildTools
-winget install Microsoft.VisualStudioCode
-```
-
-With the installation of the build tools, you now have two new terminals installed. These are the `Developer Powershell for VS 2022` and `Developer Command Prompt for VS 2022`. The C++ development tools are only available while using one of these new terminals. Open one of the terminals and check that your tools are properly installed
-
-```shell
-cl
-```
-
-```shell
-code -v
-```
-
-With everything setup we will make a folder to place some new projects, you could do this in Windows Explorer, but let's continue using the terminal. We will also get the this repository
-
-```shell
-cd ~
-mkdir Repos/School/mctr294
-cd Repos/School/mctr294
-git clone https://github.com/mctr294-2026/lab-1-UserName helloWorld
-code helloWorld
-```
-
-#### Linux
-
-On Linux, use your distribution's package manager to install the required tools. The examples below use `apt` (for Debian/Ubuntu-based systems), but you can substitute with `dnf` (Fedora), `pacman` (Arch), or your system's equivalent.
-
-First, update your package list:
-
-```shell
-sudo apt update
-```
-
-Install Git, g++ compiler, CMake, and VS Code:
-
-```shell
-sudo apt install git g++ cmake
-```
-
-For VS Code, you can either download it from the [official website](https://code.visualstudio.com/) or install it via snap:
-
-```shell
-sudo snap install --classic code
-```
-
-Verify the installations:
-
-```shell
-git --version
-g++ --version
-cmake --version
-code --version
-```
-
-With everything setup, create a folder for your projects and clone this repository:
-
-```shell
-cd ~
-mkdir -p Repos/School/mctr294
-cd Repos/School/mctr294
-git clone https://github.com/mctr294-2026/lab-1-UserName helloWorld
-code helloWorld
-```
+- While being aware of asymptotic time complexity ('Big O') is important, it is generally only relevant for large datasets, especially as they don't take into account constant overhead. If you know your dataset will have less than ~100 items, these types of considerations are typically pointless, and it is more important to focus on code clarity and expediency.
+- For more performant code, it is typically better to do all your allocations at once. Most Standard Library implementations of these data structures use a simple array with a set 'capacity' as underlying storage, and reallocate if that capacity is exceeded.  
+  - For this assignment it is perfectly fine to do your [de]allocations as needed, but this will requires managing the lifetime of each individual object
 
 ## Building
 
 ```shell
 cmake -S . -B build
+#add -DENABLE_ASAN=ON to enable address sanitization
 cmake --build build --config Debug
-build\Debug\hello_world.exe
+build\Debug\search_app.exe
 ```
 
 ## Testing
