@@ -112,8 +112,6 @@ build\Debug\hello_world.exe
 
 ## Testing
 
-[Build](#building)
-
 ```shell
 ctest --test-dir build -C Debug
 Add -V for verbose testing
