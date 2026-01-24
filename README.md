@@ -62,8 +62,6 @@ build\Debug\search_app.exe
 
 ## Testing
 
-[Build](#building)
-
 ```shell
 ctest --test-dir build -C Debug
 Add -V for verbose testing
